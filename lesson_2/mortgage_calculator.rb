@@ -5,14 +5,12 @@ def prompt(message)
   puts "=> #{message}"
 end
 
-def valid_number?(n, i=1)
+def valid_number?(n, i = 1)
   case i
-  when 0
-    /^\d+$/.match(n) && n.to_i > 0  
+  when 0, 2
+    /^\d+$/.match(n) && n.to_i > 0
   when 1
     /\d/.match(n) && /^\d*\.?\d*$/.match(n) && n.to_f.ceil > 0
-  when 2
-    /^\d+$/.match(n) && n.to_i > 0
   end
 end
 
@@ -48,16 +46,16 @@ loop do # main loop
   n_months = n_years * 12
   monthly_pay = loan * (monthly_rate / (1 - (1 + monthly_rate)**-n_months))
 
-  result = monthly_pay
-  total_cost = result.round(2) * n_months
-
-  if valid_number?(result.to_s)
-    prompt(MESSAGES['result'] + "#{format('%02.2f', result)} dollars.")
-    prompt(MESSAGES['total'] + "#{format('%02.2f', total_cost)} dollars.")
-  else 
+  unless valid_number?(monthly_pay.to_s)
     prompt(MESSAGES['error'])
     next
   end
+
+  result = monthly_pay
+  total_cost = result.round(2) * n_months
+
+  prompt(MESSAGES['result'] + "#{format('%02.2f', result)} dollars.")
+  prompt(MESSAGES['total'] + "#{format('%02.2f', total_cost)} dollars.")
 
   prompt(MESSAGES['another'])
   answer = gets.chomp
