@@ -1,0 +1,8 @@
+welcome: "Hello and welcome to the calculator! Please enter your name:"
+invalid: "Oops, invalid input! Try it again:"
+nice: "Nice to meet you, #{name.capitalize!}!"
+choose: "Choose the #{key} number:"
+operating: "#{operation_to_message(operation)} the two numbers..."
+result: "Result is #{result}."
+another: "Do you want to perform another calculation?"
+thank_you: "Thank you for calculating with us #{name}, see ya!"

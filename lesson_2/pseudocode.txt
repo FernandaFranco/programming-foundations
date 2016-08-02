@@ -1,0 +1,49 @@
+casual pseudo code:
+
+1.
+given two integers
+sum the two numbers
+return the sum
+
+
+2.
+given an array of strings
+concatenate the strings in a new string
+return new string
+
+3.
+given an array of integers
+create new array with every other element
+return new array
+
+formal pseudo code:
+
+1.
+START
+#given integer1, integer2
+SET sum = integer1 + integer2
+PRINT sum
+END
+
+2.
+START
+#given array
+SET iterator = 2
+SET new_string = first string in array
+
+FOR string in array
+new_string += string in position iterator 
+iterator += 1
+
+PRINT new_string
+
+END
+
+3.
+START
+#given array
+SET new_array = array
+
+PRINT new_array
+END
+
