@@ -10,7 +10,7 @@ def valid_number?(n, i = 1)
   when 0, 2
     /^\d+$/.match(n) && n.to_i > 0
   when 1
-    /\d/.match(n) && /^\d*\.?\d*$/.match(n) && n.to_f.ceil > 0
+    /^\d*\.?\d+$/.match(n) && n.to_f.ceil > 0
   end
 end
 
