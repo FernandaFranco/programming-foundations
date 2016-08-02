@@ -1,8 +1,0 @@
-welcome: "Hello and welcome to The Mortage Calculator! Please enter your name:"
-invalid: "Oops, invalid input! Try it again:"
-greeting: "Nice to meet you, "
-choose: "What is "
-operating: "Calculating..."
-result: "Your monthly payment is "
-another: "Do you want to perform another calculation?"
-thank_you: "Thank you for calculating with us!"
