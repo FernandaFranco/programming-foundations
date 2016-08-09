@@ -14,7 +14,7 @@ def valid_float?(number)
 end
 
 def valid_answer?(string)
-  string.start_with?("n") || string.start_with?("y")
+  string.start_with?("y", "n")
 end
 
 prompt(MESSAGES['welcome'])
