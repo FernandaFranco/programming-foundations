@@ -58,4 +58,4 @@ flintstones.map! { |name| name[0..2] }
 ### question 10
 
 flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
-flintstones,map! { |name| name[0,3] }
+flintstones.map! { |name| name[0,3] }
