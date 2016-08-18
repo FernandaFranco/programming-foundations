@@ -5,7 +5,6 @@ VALID_CHOICES = {
   "sp" => "spock",
   "l" => "lizard"
 }
-
 WINNING_CONDITIONS = {
   "rock" => %w(scissors lizard),
   "scissors" => %w(paper lizard),
