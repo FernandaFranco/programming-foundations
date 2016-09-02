@@ -104,9 +104,9 @@ end
 
 def alternate_player(current)
   if current == "player"
-    current.gsub("player", "computer")
+    "computer"
   else
-    current.gsub("computer", "player")
+    "player"
   end
 end
 
