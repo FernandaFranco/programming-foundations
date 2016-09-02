@@ -129,8 +129,8 @@ def tie?(brd)
   empty_squares(brd) == []
 end
 
-def valid_answer?(ans, accepted_arr)
-  accepted_arr.include?(ans)
+def valid_answer?(ans, accepted_array)
+  accepted_array.include?(ans)
 end
 
 def display_final_msgs(player_final, computer_final)
