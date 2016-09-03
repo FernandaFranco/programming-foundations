@@ -1,3 +1,6 @@
+MAX_NUMBER = 21
+DEALER_STOPS = 17
+
 DECK = [
   ["2", "Hearts"], ["2", "Diamonds"], ["2", "Clubs"], ["2", "Spades"],
   ["3", "Hearts"], ["3", "Diamonds"], ["3", "Clubs"], ["3", "Spades"],
@@ -8,11 +11,11 @@ DECK = [
   ["8", "Hearts"], ["8", "Diamonds"], ["8", "Clubs"], ["8", "Spades"],
   ["9", "Hearts"], ["9", "Diamonds"], ["9", "Clubs"], ["9", "Spades"],
   ["10", "Hearts"], ["10", "Diamonds"], ["10", "Clubs"], ["10", "Spades"],
-  ["Jack", "Hearts"], ["Jack", "Diamonds"], ["Jack", "Clubs"], ["Jack", "Spades"],
-  ["Queen", "Hearts"], ["Queen", "Diamonds"], ["Queen", "Clubs"], ["Queen", "Spades"],
-  ["King", "Hearts"], ["King", "Diamonds"], ["King", "Clubs"], ["King", "Spades"],
-  ["Ace", "Hearts"], ["Ace", "Diamonds"], ["Ace", "Clubs"], ["Ace", "Spades"]
-]
+  ["J", "Hearts"], ["J", "Diamonds"], ["J", "Clubs"], ["J", "Spades"],
+  ["Q", "Hearts"], ["Q", "Diamonds"], ["Q", "Clubs"], ["Q", "Spades"],
+  ["K", "Hearts"], ["K", "Diamonds"], ["K", "Clubs"], ["K", "Spades"],
+  ["A", "Hearts"], ["A", "Diamonds"], ["A", "Clubs"], ["A", "Spades"]
+].freeze
 
 def initialize_deck
   DECK.shuffle
@@ -23,48 +26,45 @@ def prompt(message)
 end
 
 def total(cards)
-  values = cards.map {|card| card[0]}
-  
+  values = cards.map { |card| card[0] }
+
   total = 0
-  values.each do |value|  
-    case value
-    when "Jack", "Queen", "King"
-      total += 10
-      next
-    when "Ace"
-      total += 11
-      next
-    else
-      total += value.to_i
-    end
+  values.each do |value|
+    total += if value == "J" || value == "Q" || value == "K"
+               10
+             elsif value == "A"
+               11
+             else
+               value.to_i
+             end
   end
 
-  values.count("Ace").times do
-    total -= 10 if total > 21
+  values.count("A").times do
+    total -= 10 if total > MAX_NUMBER
   end
 
   total
 end
-  
+
 def busted?(cards)
-  total(cards) > 21
+  total(cards) > MAX_NUMBER
 end
 
 def calculate_result(p_cards, d_cards)
-  player_total = total(p_cards)
-  dealer_total = total(d_cards)
+  p_total = total(p_cards)
+  d_total = total(d_cards)
 
   if busted?(p_cards)
     :player_busted
   elsif busted?(d_cards)
     :dealer_busted
-  elsif player_total > dealer_total
+  elsif p_total > d_total
     :player
-  elsif dealer_total > player_total
+  elsif d_total > p_total
     :dealer
   else
     :tie
-  end 
+  end
 end
 
 def display_result(p_cards, d_cards)
@@ -87,23 +87,34 @@ end
 def play_again?
   prompt "Do you want to play again? (Yes/No)"
   answer = gets.chomp.downcase
-  answer.start_with?('y')
+  answer == 'yes'
 end
 
-loop do
-  prompt "Welcome to Twenty-One!"
+def display_end_of_round(p_cards, d_cards)
+  puts "=============="
+  prompt "Dealer has #{d_cards}, for a total of: #{total(d_cards)}"
+  prompt "Player has #{p_cards}, for a total of: #{total(p_cards)}"
+  puts "=============="
 
+  display_result(p_cards, d_cards)
+end
+
+player_wins = 0
+dealer_wins = 0
+
+prompt "Welcome to Twenty-One!"
+loop do
   deck = initialize_deck
   player_cards = deck.shift(2)
   dealer_cards = deck.shift(2)
- 
+
   prompt "Dealer has #{dealer_cards[0]} and unknown card."
-  prompt "You have: #{player_cards[0]} and #{player_cards[1]}, 
-          for a total of #{total(player_cards)}."
+  prompt "You have: #{player_cards[0]} and #{player_cards[1]}, " \
+         "for a total of #{total(player_cards)}."
 
   loop do
     player_turn = nil
-    loop do 
+    loop do
       prompt "Do you want to hit or stay? (Hit/Stay)"
       player_turn = gets.chomp.downcase
       break if ['hit', 'stay'].include?(player_turn)
@@ -113,26 +124,52 @@ loop do
     if player_turn == 'hit'
       player_cards << deck.shift
       prompt "You chose to hit!"
+      prompt "Your cards are now: #{player_cards}"
+      prompt "Your total is now: #{total(player_cards)}"
+    end
+
+    break if player_turn == 'stay' || busted?(player_cards)
   end
 
   if busted?(player_cards)
-    #do something
-  else 
-    prompt "You chose to stay!"
+    display_end_of_round(player_cards, dealer_cards)
+    dealer_wins += 1
+
+    (player_wins == 5 || dealer_wins == 5) || !play_again? ? break : next
+  else
+    prompt "You chose to stay at #{total(player_cards)}."
   end
 
-  loop do 
-    break if total(dealer_cards) >= 17
+  loop do
+    break if busted?(dealer_cards) || total(dealer_cards) >= DEALER_STOPS
+
+    prompt "Dealer hits!"
     dealer_cards << deck.shift
+    prompt "Dealer's cards are now: #{dealer_cards}"
   end
 
-  puts player_cards
-  puts total(player_cards)
+  if busted?(dealer_cards)
+    prompt "Dealer total is now: #{total(dealer_cards)}"
+    display_end_of_round(player_cards, dealer_cards)
+    player_wins += 1
 
-  puts dealer_cards
-  puts total(dealer_cards)
+    (player_wins == 5 || dealer_wins == 5) || !play_again? ? break : next
+  else
+    prompt "Dealer stays at #{total(dealer_cards)}"
+  end
 
-  display_result(player_cards, dealer_cards)
-  winner(player_cards, dealer_cards)
+  # both player and dealer stays
+  display_end_of_round(player_cards, dealer_cards)
+  result = calculate_result(player_cards, dealer_cards)
+  case result
+  when :player_busted, :dealer
+    dealer_wins += 1
+  when :dealer_busted, :player
+    player_wins += 1
+  end
 
+  break if (player_wins == 5 || dealer_wins == 5) || !play_again?
 end
+
+prompt "Player: #{player_wins} X Dealer: #{dealer_wins}."
+prompt "Thank you for playing Twenty-One! Good bye!"
