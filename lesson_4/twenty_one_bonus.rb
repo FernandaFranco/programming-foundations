@@ -111,9 +111,9 @@ end
 def display_end_of_round(p_cards, d_cards)
   puts "=============="
   prompt "Dealer has #{cards_description(d_cards)}, " \
-         "for a total of: #{total(d_cards)}"
+         "for a total of: #{total(d_cards)}."
   prompt "Player has #{cards_description(p_cards)}, " \
-         "for a total of: #{total(p_cards)}"
+         "for a total of: #{total(p_cards)}."
   puts "=============="
 
   display_result(p_cards, d_cards)
@@ -131,7 +131,7 @@ loop do
   dealer_cards = deck.shift(2)
 
   prompt "Dealer has #{cards_description([dealer_cards[0]])} and unknown card."
-  prompt "You have: #{cards_description(player_cards)} " \
+  prompt "You have: #{cards_description(player_cards)}, " \
          "for a total of #{total(player_cards)}."
 
   loop do
@@ -146,8 +146,8 @@ loop do
     if player_turn == 'hit'
       player_cards << deck.shift
       prompt "You chose to hit!"
-      prompt "Your cards are now: #{cards_description(player_cards)}"
-      prompt "Your total is now: #{total(player_cards)}"
+      prompt "Your cards are now: #{cards_description(player_cards)}."
+      prompt "Your total is now: #{total(player_cards)}."
     end
 
     break if player_turn == 'stay' || busted?(player_cards)
@@ -167,17 +167,17 @@ loop do
 
     prompt "Dealer hits!"
     dealer_cards << deck.shift
-    prompt "Dealer's cards are now: #{cards_description(dealer_cards)}"
+    prompt "Dealer's cards are now: #{cards_description(dealer_cards)}."
   end
 
   if busted?(dealer_cards)
-    prompt "Dealer total is now: #{total(dealer_cards)}"
+    prompt "Dealer total is now: #{total(dealer_cards)}."
     display_end_of_round(player_cards, dealer_cards)
     player_wins += 1
 
     (player_wins == 5 || dealer_wins == 5) || !play_again? ? break : next
   else
-    prompt "Dealer stays at #{total(dealer_cards)}"
+    prompt "Dealer stays at #{total(dealer_cards)}."
   end
 
   # both player and dealer stays
