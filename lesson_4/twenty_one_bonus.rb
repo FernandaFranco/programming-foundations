@@ -25,6 +25,19 @@ def prompt(message)
   puts "=> #{message}"
 end
 
+def cards_description(cards)
+  cards_strings = []
+  cards.each do |card|
+    cards_strings << "#{card[0]} of #{card[1]}"
+  end
+  last_card = cards_strings.pop
+  if !cards_strings.empty?
+    "#{cards_strings.join(', ')} and #{last_card}"
+  else
+    last_card
+  end
+end
+
 def total(cards)
   values = cards.map { |card| card[0] }
 
@@ -85,15 +98,22 @@ def display_result(p_cards, d_cards)
 end
 
 def play_again?
-  prompt "Do you want to play again? (Yes/No)"
-  answer = gets.chomp.downcase
+  answer = nil
+  loop do
+    prompt "Do you want to play again? (Yes/No)"
+    answer = gets.chomp.downcase
+    break if ['yes', 'no'].include?(answer)
+    prompt "Sorry, must enter 'yes' or 'no'."
+  end
   answer == 'yes'
 end
 
 def display_end_of_round(p_cards, d_cards)
   puts "=============="
-  prompt "Dealer has #{d_cards}, for a total of: #{total(d_cards)}"
-  prompt "Player has #{p_cards}, for a total of: #{total(p_cards)}"
+  prompt "Dealer has #{cards_description(d_cards)}, " \
+         "for a total of: #{total(d_cards)}"
+  prompt "Player has #{cards_description(p_cards)}, " \
+         "for a total of: #{total(p_cards)}"
   puts "=============="
 
   display_result(p_cards, d_cards)
@@ -102,14 +122,16 @@ end
 player_wins = 0
 dealer_wins = 0
 
+system "clear"
+
 prompt "Welcome to Twenty-One!"
 loop do
   deck = initialize_deck
   player_cards = deck.shift(2)
   dealer_cards = deck.shift(2)
 
-  prompt "Dealer has #{dealer_cards[0]} and unknown card."
-  prompt "You have: #{player_cards[0]} and #{player_cards[1]}, " \
+  prompt "Dealer has #{cards_description([dealer_cards[0]])} and unknown card."
+  prompt "You have: #{cards_description(player_cards)} " \
          "for a total of #{total(player_cards)}."
 
   loop do
@@ -124,7 +146,7 @@ loop do
     if player_turn == 'hit'
       player_cards << deck.shift
       prompt "You chose to hit!"
-      prompt "Your cards are now: #{player_cards}"
+      prompt "Your cards are now: #{cards_description(player_cards)}"
       prompt "Your total is now: #{total(player_cards)}"
     end
 
@@ -145,7 +167,7 @@ loop do
 
     prompt "Dealer hits!"
     dealer_cards << deck.shift
-    prompt "Dealer's cards are now: #{dealer_cards}"
+    prompt "Dealer's cards are now: #{cards_description(dealer_cards)}"
   end
 
   if busted?(dealer_cards)
@@ -172,4 +194,13 @@ loop do
 end
 
 prompt "Player: #{player_wins} X Dealer: #{dealer_wins}."
-prompt "Thank you for playing Twenty-One! Good bye!"
+
+if player_wins > dealer_wins
+  prompt "Player is the big winner!"
+elsif dealer_wins > player_wins
+  prompt "Dealer is the big winner!"
+else
+  prompt "Nobody wins!"
+end
+
+prompt "Thank you for playing Twenty-One. Good bye!"
