@@ -115,6 +115,18 @@ def end_game?(p_wins, d_wins)
   big_winner?(p_wins, d_wins) || !play_again?
 end
 
+def display_final_score(p_wins, d_wins)
+  prompt "Player: #{p_wins} X Dealer: #{d_wins}."
+
+  if p_wins > d_wins
+    prompt "Player is the big winner!"
+  elsif d_wins > p_wins
+    prompt "Dealer is the big winner!"
+  else
+    prompt "Nobody wins!"
+  end
+end
+
 player_wins = 0
 dealer_wins = 0
 
@@ -189,14 +201,6 @@ loop do
   break if end_game?(player_wins, dealer_wins)
 end
 
-prompt "Player: #{player_wins} X Dealer: #{dealer_wins}."
-
-if player_wins > dealer_wins
-  prompt "Player is the big winner!"
-elsif dealer_wins > player_wins
-  prompt "Dealer is the big winner!"
-else
-  prompt "Nobody wins!"
-end
+display_final_score(player_wins, dealer_wins)
 
 prompt "Thank you for playing Twenty-One. Good-bye!"
