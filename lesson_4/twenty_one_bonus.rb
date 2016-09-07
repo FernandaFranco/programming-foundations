@@ -1,24 +1,12 @@
 MAX_NUMBER = 21
 DEALER_STOPS = 17
 
-DECK = [
-  ["2", "Hearts"], ["2", "Diamonds"], ["2", "Clubs"], ["2", "Spades"],
-  ["3", "Hearts"], ["3", "Diamonds"], ["3", "Clubs"], ["3", "Spades"],
-  ["4", "Hearts"], ["4", "Diamonds"], ["4", "Clubs"], ["4", "Spades"],
-  ["5", "Hearts"], ["5", "Diamonds"], ["5", "Clubs"], ["5", "Spades"],
-  ["6", "Hearts"], ["6", "Diamonds"], ["6", "Clubs"], ["6", "Spades"],
-  ["7", "Hearts"], ["7", "Diamonds"], ["7", "Clubs"], ["7", "Spades"],
-  ["8", "Hearts"], ["8", "Diamonds"], ["8", "Clubs"], ["8", "Spades"],
-  ["9", "Hearts"], ["9", "Diamonds"], ["9", "Clubs"], ["9", "Spades"],
-  ["10", "Hearts"], ["10", "Diamonds"], ["10", "Clubs"], ["10", "Spades"],
-  ["J", "Hearts"], ["J", "Diamonds"], ["J", "Clubs"], ["J", "Spades"],
-  ["Q", "Hearts"], ["Q", "Diamonds"], ["Q", "Clubs"], ["Q", "Spades"],
-  ["K", "Hearts"], ["K", "Diamonds"], ["K", "Clubs"], ["K", "Spades"],
-  ["A", "Hearts"], ["A", "Diamonds"], ["A", "Clubs"], ["A", "Spades"]
-].freeze
+SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades'].freeze
+VALUES = ['2', '3', '4', '5', '6', '7', '8', '9',\
+          '10', 'J', 'Q', 'K', 'A'].freeze
 
 def initialize_deck
-  DECK.shuffle
+  VALUES.product(SUITS).shuffle
 end
 
 def prompt(message)
@@ -119,10 +107,19 @@ def display_end_of_round(p_cards, d_cards)
   display_result(p_cards, d_cards)
 end
 
+def big_winner?(p_wins, d_wins)
+  [p_wins, d_wins].include?(5)
+end
+
+def end_game?(p_wins, d_wins)
+  big_winner?(p_wins, d_wins) || !play_again?
+end
+
 player_wins = 0
 dealer_wins = 0
 
 system "clear"
+system 'cls'
 
 prompt "Welcome to Twenty-One!"
 loop do
@@ -157,7 +154,7 @@ loop do
     display_end_of_round(player_cards, dealer_cards)
     dealer_wins += 1
 
-    (player_wins == 5 || dealer_wins == 5) || !play_again? ? break : next
+    end_game?(player_wins, dealer_wins) ? break : next
   else
     prompt "You chose to stay at #{total(player_cards)}."
   end
@@ -171,11 +168,10 @@ loop do
   end
 
   if busted?(dealer_cards)
-    prompt "Dealer total is now: #{total(dealer_cards)}."
     display_end_of_round(player_cards, dealer_cards)
     player_wins += 1
 
-    (player_wins == 5 || dealer_wins == 5) || !play_again? ? break : next
+    end_game?(player_wins, dealer_wins) ? break : next
   else
     prompt "Dealer stays at #{total(dealer_cards)}."
   end
@@ -184,13 +180,13 @@ loop do
   display_end_of_round(player_cards, dealer_cards)
   result = calculate_result(player_cards, dealer_cards)
   case result
-  when :player_busted, :dealer
+  when :dealer
     dealer_wins += 1
-  when :dealer_busted, :player
+  when :player
     player_wins += 1
   end
 
-  break if (player_wins == 5 || dealer_wins == 5) || !play_again?
+  break if end_game?(player_wins, dealer_wins)
 end
 
 prompt "Player: #{player_wins} X Dealer: #{dealer_wins}."
@@ -203,4 +199,4 @@ else
   prompt "Nobody wins!"
 end
 
-prompt "Thank you for playing Twenty-One. Good bye!"
+prompt "Thank you for playing Twenty-One. Good-bye!"
